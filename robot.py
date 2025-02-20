@@ -1,11 +1,8 @@
-from dataclasses import dataclass
-from enum import Enum
-
 class Direction:
-    NORTH = 0
-    EAST = 1
-    SOUTH = 2
-    WEST = 3
+    NORTH = 'NORTH'
+    EAST = 'EAST'
+    SOUTH = 'SOUTH'
+    WEST = 'WEST'
 
     # TODO: Refactor implementation
     @staticmethod
@@ -52,9 +49,19 @@ class Position:
 
 class Robot:
     def __init__(self, x=0, y=0, f=Direction.NORTH, environment=Environment(5, 5)):
-        self.position = Position(x, y)
         self.f = f
         self.environment = environment
+        if not self.environment.is_valid_position(x, y):
+            x = 0
+            y = 0
+        self.position = Position(x, y)
+    def place(self, x, y, f):
+        if self.environment.is_valid_position(x, y):
+            self.position = Position(x, y)
+            self.f = f
+            return True
+        return False
+        
     def move(self):
         new_x = self.position.x
         new_y = self.position.y
@@ -79,4 +86,4 @@ class Robot:
         elif rotation == "RIGHT":
             self.f = Direction.rotate_right(self.f)
     def report(self):
-        pass
+        print(f"Report: {self.position.x},{self.position.y},{self.f}")
