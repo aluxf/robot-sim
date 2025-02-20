@@ -56,6 +56,7 @@ class Robot:
             y = 0
         self.position = Position(x, y)
     def place(self, x, y, f):
+        print(f"Place: {x},{y},{f}")
         if self.environment.is_valid_position(x, y):
             self.position = Position(x, y)
             self.f = f
@@ -93,18 +94,61 @@ class Interface:
 
     def __init__(self):
         self.robot = Robot()
-        self.single_commands = {
+        self.commands = {
             "MOVE": self.robot.move,
-            "LEFT": self.robot.rotate("LEFT"),
-            "RIGHT": self.robot.rotate("RIGHT"),
-            "REPORT": self.robot.report
-        }
-        self.argument_commands = {
+            "LEFT": lambda: self.robot.rotate("LEFT"),
+            "RIGHT": lambda: self.robot.rotate("RIGHT"),
+            "REPORT": self.robot.report,
             "PLACE": self.robot.place
         }
+        self.command_history = []
     
-    def parse_input(self, input):
-        pass
+    def parse_command(self, input):
+        potential_command = input.split(",")[0]
+
+        if self.is_command_prohibited(potential_command):
+            raise ValueError("Illegal command")
+
+        if potential_command == "PLACE":
+            try:
+                args = input.split(",")[1:]
+                if len(args) != 3:
+                    raise ValueError("Invalid arguments")
+                parsed_args = [int(args[0]), int(args[1]), args[2]]
+                self.command_history.append(potential_command)
+                return self.commands[potential_command](*parsed_args)
+            except Exception as e:
+                print(f"Error: {e}")
+                raise ValueError("Invalid type of arguments")
+                
+        # Non-argument commands
+        if potential_command in self.commands:
+            self.command_history.append(potential_command)
+            print(potential_command)
+            return self.commands[potential_command]()
+        
+        raise ValueError("Invalid command")
     
+    def is_command_prohibited(self, command):
+        if command != "PLACE" and len(self.command_history) == 0:
+            return True
+        return False
+
     def execute(self, command):
-        pass
+        try:
+            self.parse_command(command)
+        except Exception as e:
+            print(f"Error: {e}")
+
+if __name__ == "__main__":
+    interface = Interface()
+    interface.execute("MOVE")
+    interface.execute("PLACE,1,1,NORTH")
+    interface.execute("REPORT")
+    interface.execute("LEFT")
+    interface.execute("MOVE")
+    interface.execute("REPORT")
+    interface.execute("MOVE")
+    interface.execute("REPORT")
+
+    
