@@ -1,11 +1,36 @@
 from dataclasses import dataclass
 from enum import Enum
 
-class Direction(Enum):
-    NORTH = 1
-    EAST = 2
-    SOUTH = 3
-    WEST = 4
+class Direction:
+    NORTH = 0
+    EAST = 1
+    SOUTH = 2
+    WEST = 3
+
+    # TODO: Refactor implementation
+    @staticmethod
+    def rotate_left(direction):
+        if direction == Direction.NORTH:
+            return Direction.WEST
+        elif direction == Direction.WEST:
+            return Direction.SOUTH
+        elif direction == Direction.SOUTH:
+            return Direction.EAST
+        elif direction == Direction.EAST:
+            return Direction.NORTH
+    
+    @staticmethod
+    def rotate_right(direction):
+        if direction == Direction.NORTH:
+            return Direction.EAST
+        elif direction == Direction.EAST:
+            return Direction.SOUTH
+        elif direction == Direction.SOUTH:
+            return Direction.WEST
+        elif direction == Direction.WEST:
+            return Direction.NORTH
+
+
 
 class Environment:
     def __init__(self, width, height):
@@ -22,10 +47,10 @@ class Robot:
         self.f = f
     def move(self):
         pass
-    def rotate(self, direction):
-        if direction == 'LEFT':
-            pass
-        if direction == 'RIGHT':
-            pass
+    def rotate(self, rotation):
+        if rotation == "LEFT":
+            self.f = Direction.rotate_left(self.f)
+        elif rotation == "RIGHT":
+            self.f = Direction.rotate_right(self.f)
     def report(self):
         pass
