@@ -87,3 +87,24 @@ class Robot:
             self.f = Direction.rotate_right(self.f)
     def report(self):
         print(f"Report: {self.position.x},{self.position.y},{self.f}")
+
+
+class Interface:
+
+    def __init__(self):
+        self.robot = Robot()
+        self.single_commands = {
+            "MOVE": self.robot.move,
+            "LEFT": self.robot.rotate("LEFT"),
+            "RIGHT": self.robot.rotate("RIGHT"),
+            "REPORT": self.robot.report
+        }
+        self.argument_commands = {
+            "PLACE": self.robot.place
+        }
+    
+    def parse_input(self, input):
+        pass
+    
+    def execute(self, command):
+        pass
