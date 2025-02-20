@@ -30,8 +30,6 @@ class Direction:
         elif direction == Direction.WEST:
             return Direction.NORTH
 
-
-
 class Environment:
     def __init__(self, width, height):
         self.width = width
@@ -39,14 +37,42 @@ class Environment:
 
     def is_valid_position(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
+    
 
-class Robot:
-    def __init__(self, x=0, y=0, f=Direction.NORTH):
+class Position:
+    def __init__(self, x, y):
         self.x = x
         self.y = y
+    
+    def update(self, x, y):
+        self.x = x
+        self.y = y
+        
+
+
+class Robot:
+    def __init__(self, x=0, y=0, f=Direction.NORTH, environment=Environment(5, 5)):
+        self.position = Position(x, y)
         self.f = f
+        self.environment = environment
     def move(self):
-        pass
+        new_x = self.position.x
+        new_y = self.position.y
+        
+        if self.f == Direction.NORTH:
+            new_y += 1
+        elif self.f == Direction.EAST:
+            new_x += 1
+        elif self.f == Direction.SOUTH:
+            new_y -= 1
+        elif self.f == Direction.WEST:
+            new_x -= 1
+        
+        if(self.environment.is_valid_position(new_x, new_y)):
+            self.position.update(new_x, new_y)
+            return True
+        return False
+
     def rotate(self, rotation):
         if rotation == "LEFT":
             self.f = Direction.rotate_left(self.f)
