@@ -1,5 +1,6 @@
+import random
 import unittest
-from robot import Direction, Environment
+from robot import Direction, Environment, Position
 
 
 class TestDirection(unittest.TestCase):
@@ -54,6 +55,26 @@ class TestEnvironment(unittest.TestCase):
 
         # Y > y_max
         self.assertFalse(env.is_valid_position(4, y_max+1))
+
+
+
+class TestPosition(unittest.TestCase):
+    def test_update(self):
+        pos = Position(0, 0)
+        pos.update(1, 1)
+        self.assertEqual(pos.x, 1)
+        self.assertEqual(pos.y, 1)
+
+    def test_random_update(self):
+        pos = Position(0, 0)
+
+        # Test 10 random updates
+        for _ in range(10):
+            x = random.randint(-10, 10)
+            y = random.randint(-10, 10)
+            pos.update(x, y)
+            self.assertEqual(pos.x, x)
+            self.assertEqual(pos.y, y)
 
 if __name__ == '__main__':
     unittest.main()
