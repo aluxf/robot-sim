@@ -1,6 +1,6 @@
 import random
 import unittest
-from robot import Direction, Environment, Position, Robot
+from robot import Direction, Environment, Interface, Position, Robot
 
 
 class TestDirection(unittest.TestCase):
@@ -173,7 +173,79 @@ class TestRobot(unittest.TestCase):
         
         report_message = self.robot.report()
         self.assertEqual(report_message, "Report: 1,1,NORTH")
-        
 
+class TestInterface(unittest.TestCase):
+    def setUp(self):
+        self.env = Environment(5, 5)
+        self.robot = Robot(environment=self.env)
+        self.interface = Interface(robot=self.robot)
+
+    def test_parse_command_move_without_place(self):
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("MOVE")
+
+    def test_parse_command_place(self):
+        try:
+            self.interface.parse_command("PLACE,1,1,NORTH")
+            self.interface.parse_command("PLACE,4,1,SOUTH")
+            self.interface.parse_command("PLACE,2,2,EAST")
+            self.interface.parse_command("PLACE,1,1,WEST")
+        except Exception as e:
+            self.fail(e)
+    
+    def test_parse_command_invalid_place_arguments(self):
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("PLACE,1,1")
+        
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("PLACE,1,1,UP")
+            self.interface.parse_command("PLACE,1,1,NORT")
+
+    def test_parse_command_report(self):
+        self.interface.parse_command("PLACE,1,1,NORTH")
+        try:
+            self.interface.parse_command("REPORT")
+        except Exception as e:
+            print(e)
+            self.fail(f"parse_command('REPORT') raised {e} unexpectedly!")
+
+    def test_parse_command_rotate_left(self):
+        self.interface.parse_command("PLACE,1,1,NORTH")
+        try:
+            self.interface.parse_command("LEFT")
+        except Exception as e:
+            self.fail(f"parse_command('LEFT') raised {e} unexpectedly!")
+
+    def test_parse_command_rotate_right(self):
+        self.interface.parse_command("PLACE,1,1,NORTH")
+        try:
+            self.interface.parse_command("RIGHT")
+        except Exception as e:
+            self.fail(f"parse_command('RIGHT') raised {e} unexpectedly!")
+
+    def test_parse_command_move(self):
+        self.interface.parse_command("PLACE,1,1,NORTH")
+        try:
+            self.interface.parse_command("MOVE")
+        except Exception as e:
+            self.fail(f"parse_command('MOVE') raised {e} unexpectedly!")
+
+    def test_parse_command_invalid_command(self):
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("JUMP")
+
+    def test_parse_command_prohibited_command(self):
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("LEFT")
+        
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("RIGHT")
+
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("MOVE")
+        
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("REPORT")
+        
 if __name__ == '__main__':
     unittest.main()
