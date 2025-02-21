@@ -108,19 +108,19 @@ class Interface:
         potential_command = input.split(",")[0]
 
         if self.is_command_prohibited(potential_command):
-            raise ValueError("Illegal command")
+            raise ValueError(f"Illegal command: {input}")
 
         if potential_command == "PLACE":
             try:
                 args = input.split(",")[1:]
                 if len(args) != 3:
-                    raise ValueError("Invalid arguments")
+                    raise ValueError(f"Invalid arguments: {input}")
                 parsed_args = [int(args[0]), int(args[1]), args[2]]
                 self.command_history.append(potential_command)
                 return self.commands[potential_command](*parsed_args)
             except Exception as e:
                 print(f"Error: {e}")
-                raise ValueError("Invalid type of arguments")
+                raise ValueError(f"Invalid type of arguments: {input}")
                 
         # Non-argument commands
         if potential_command in self.commands:
@@ -128,7 +128,7 @@ class Interface:
             print(potential_command)
             return self.commands[potential_command]()
         
-        raise ValueError("Invalid command")
+        raise ValueError(f"Invalid command: {input}")
     
     def is_command_prohibited(self, command):
         if command != "PLACE" and len(self.command_history) == 0:
