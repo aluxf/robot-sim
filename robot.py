@@ -4,6 +4,10 @@ class Direction:
     SOUTH = 'SOUTH'
     WEST = 'WEST'
 
+    @staticmethod
+    def is_valid_direction(direction):
+        return direction in [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
+
     # TODO: Refactor implementation
     @staticmethod
     def rotate_left(direction):
@@ -56,7 +60,7 @@ class Robot:
             y = 0
         self.position = Position(x, y)
     def place(self, x, y, f):
-        if self.environment.is_valid_position(x, y):
+        if Direction.is_valid_direction(f) and self.environment.is_valid_position(x, y):
             self.position = Position(x, y)
             self.f = f
             return True
@@ -119,7 +123,6 @@ class Interface:
                 self.command_history.append(potential_command)
                 return self.commands[potential_command](*parsed_args)
             except Exception as e:
-                print(f"Error: {e}")
                 raise ValueError(f"Invalid type of arguments: {input}")
                 
         # Non-argument commands
