@@ -92,8 +92,8 @@ class Robot:
 
 class Interface:
 
-    def __init__(self):
-        self.robot = Robot()
+    def __init__(self, robot=Robot(), commands={} ):
+        self.robot = robot
         self.commands = {
             "MOVE": self.robot.move,
             "LEFT": lambda: self.robot.rotate("LEFT"),
