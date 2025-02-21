@@ -1,6 +1,6 @@
 import random
 import unittest
-from robot import Direction, Environment, Position
+from robot import Direction, Environment, Position, Robot
 
 
 class TestDirection(unittest.TestCase):
@@ -75,6 +75,105 @@ class TestPosition(unittest.TestCase):
             pos.update(x, y)
             self.assertEqual(pos.x, x)
             self.assertEqual(pos.y, y)
+
+class TestRobot(unittest.TestCase):
+    def setUp(self):
+        self.env = Environment(5, 5)
+        self.robot = Robot(environment=self.env)
+
+    def test_place(self):
+        # Test valid position
+        self.assertTrue(self.robot.place(1, 1, Direction.NORTH))
+        self.assertEqual(self.robot.position.x, 1)
+        self.assertEqual(self.robot.position.y, 1)
+        self.assertEqual(self.robot.f, Direction.NORTH)
+
+        # Test invalid position
+        self.assertFalse(self.robot.place(5, 5, Direction.SOUTH))
+
+        # Check position not updated
+        self.assertEqual(self.robot.position.x, 1)
+        self.assertEqual(self.robot.position.y, 1)
+        self.assertEqual(self.robot.f, Direction.NORTH)
+
+    def test_move(self):
+         # Valid NORTH move
+        self.robot.place(1, 1, Direction.NORTH)
+        self.assertTrue(self.robot.move())
+        self.assertEqual(self.robot.position.x, 1)
+        self.assertEqual(self.robot.position.y, 2)
+
+        # Valid EAST move
+        self.robot.place(1, 1, Direction.EAST)
+        self.assertTrue(self.robot.move())
+        self.assertEqual(self.robot.position.x, 2)
+        self.assertEqual(self.robot.position.y, 1)
+
+        # Valid SOUTH move
+        self.robot.place(1, 1, Direction.SOUTH)
+        self.assertTrue(self.robot.move())
+        self.assertEqual(self.robot.position.x, 1)
+        self.assertEqual(self.robot.position.y, 0)
+
+        # Valid WEST move
+        self.robot.place(1, 1, Direction.WEST)
+        self.assertTrue(self.robot.move())
+        self.assertEqual(self.robot.position.x, 0)
+        self.assertEqual(self.robot.position.y, 1)
+
+        # Invalid NORTH move (out of bounds)
+        self.robot.place(0, 4, Direction.NORTH)
+        self.assertFalse(self.robot.move())
+        self.assertEqual(self.robot.position.x, 0)
+        self.assertEqual(self.robot.position.y, 4)
+
+        # Invalid EAST move (out of bounds)
+        self.robot.place(4, 0, Direction.EAST)
+        self.assertFalse(self.robot.move())
+        self.assertEqual(self.robot.position.x, 4)
+        self.assertEqual(self.robot.position.y, 0)
+
+        # Invalid SOUTH move (out of bounds)
+        self.robot.place(0, 0, Direction.SOUTH)
+        self.assertFalse(self.robot.move())
+        self.assertEqual(self.robot.position.x, 0)
+        self.assertEqual(self.robot.position.y, 0)
+
+        # Invalid WEST move (out of bounds)
+        self.robot.place(0, 0, Direction.WEST)
+        self.assertFalse(self.robot.move())
+        self.assertEqual(self.robot.position.x, 0)
+        self.assertEqual(self.robot.position.y, 0)
+
+    def test_rotate(self):
+        # Full 360 LEFT rotation
+        self.robot.place(0, 0, Direction.NORTH)
+        self.robot.rotate("LEFT")
+        self.assertEqual(self.robot.f, Direction.WEST)
+        self.robot.rotate("LEFT")
+        self.assertEqual(self.robot.f, Direction.SOUTH)
+        self.robot.rotate("LEFT")
+        self.assertEqual(self.robot.f, Direction.EAST)
+        self.robot.rotate("LEFT")
+        self.assertEqual(self.robot.f, Direction.NORTH)
+
+        # Full 360 RIGHT rotation
+        self.robot.place(0, 0, Direction.NORTH)
+        self.robot.rotate("RIGHT")
+        self.assertEqual(self.robot.f, Direction.EAST)
+        self.robot.rotate("RIGHT")
+        self.assertEqual(self.robot.f, Direction.SOUTH)
+        self.robot.rotate("RIGHT")
+        self.assertEqual(self.robot.f, Direction.WEST)
+        self.robot.rotate("RIGHT")
+        self.assertEqual(self.robot.f, Direction.NORTH)
+
+    def test_report(self):
+        self.robot.place(1, 1, Direction.NORTH)
+        
+        report_message = self.robot.report()
+        self.assertEqual(report_message, "Report: 1,1,NORTH")
+        
 
 if __name__ == '__main__':
     unittest.main()

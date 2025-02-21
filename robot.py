@@ -56,7 +56,6 @@ class Robot:
             y = 0
         self.position = Position(x, y)
     def place(self, x, y, f):
-        print(f"Place: {x},{y},{f}")
         if self.environment.is_valid_position(x, y):
             self.position = Position(x, y)
             self.f = f
@@ -87,7 +86,9 @@ class Robot:
         elif rotation == "RIGHT":
             self.f = Direction.rotate_right(self.f)
     def report(self):
-        print(f"Report: {self.position.x},{self.position.y},{self.f}")
+        report_message = f"Report: {self.position.x},{self.position.y},{self.f}"
+        print(report_message)
+        return report_message
 
 
 class Interface:
