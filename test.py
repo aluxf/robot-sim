@@ -56,8 +56,6 @@ class TestEnvironment(unittest.TestCase):
         # Y > y_max
         self.assertFalse(env.is_valid_position(4, y_max+1))
 
-
-
 class TestPosition(unittest.TestCase):
     def test_update(self):
         pos = Position(0, 0)
@@ -180,10 +178,27 @@ class TestInterface(unittest.TestCase):
         self.robot = Robot(environment=self.env)
         self.interface = Interface(robot=self.robot)
 
-    def test_parse_command_move_without_place(self):
-        with self.assertRaises(ValueError):
-            self.interface.parse_command("MOVE")
+    # is_command_prohibited tests
+    def test_is_command_prohibited(self):
+        # Test before valid PLACE command
+        self.assertTrue(self.interface.is_command_prohibited("MOVE"))
+        self.assertTrue(self.interface.is_command_prohibited("LEFT"))
+        self.assertTrue(self.interface.is_command_prohibited("RIGHT"))
+        self.assertTrue(self.interface.is_command_prohibited("REPORT"))
 
+        self.assertFalse(self.interface.is_command_prohibited("PLACE"))
+
+        # Test after valid PLACE command
+        self.interface.parse_command("PLACE,1,1,NORTH")
+        self.assertFalse(self.interface.is_command_prohibited("MOVE"))
+        self.assertFalse(self.interface.is_command_prohibited("LEFT"))
+        self.assertFalse(self.interface.is_command_prohibited("RIGHT"))
+        self.assertFalse(self.interface.is_command_prohibited("REPORT"))
+        self.assertFalse(self.interface.is_command_prohibited("PLACE"))
+
+    # parse_command tests
+
+    # TODO: Test all possible valid positions?
     def test_parse_command_place(self):
         try:
             self.interface.parse_command("PLACE,1,1,NORTH")
@@ -194,58 +209,85 @@ class TestInterface(unittest.TestCase):
             self.fail(e)
     
     def test_parse_command_invalid_place_arguments(self):
+        # Missing arguments
         with self.assertRaises(ValueError):
-            self.interface.parse_command("PLACE,1,1")
+            self.interface.parse_command("PLACE")
+
+        # Missing direction
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("PLACE,1,1,")
+
+        # Missing direction and y
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("PLACE,1,,")
+
+        # Missing direction and x and y
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("PLACE,,,")
+
+        # Invalid types
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("PLACE,x,y,1")
         
+        # Invalid direction
         with self.assertRaises(ValueError):
             self.interface.parse_command("PLACE,1,1,UP")
             self.interface.parse_command("PLACE,1,1,NORT")
+
+    def test_parse_command_without_place(self):
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("LEFT")
+        
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("RIGHT")
+
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("MOVE")
+        
+        with self.assertRaises(ValueError):
+            self.interface.parse_command("REPORT")
+
+    def test_parse_command_with_place(self):
+        self.interface.parse_command("PLACE,1,1,NORTH")
+        try:
+            self.interface.parse_command("REPORT")
+            self.interface.parse_command("LEFT")
+            self.interface.parse_command("RIGHT")
+            self.interface.parse_command("MOVE")
+        except Exception as e:
+            self.fail(e)
 
     def test_parse_command_report(self):
         self.interface.parse_command("PLACE,1,1,NORTH")
         try:
             self.interface.parse_command("REPORT")
         except Exception as e:
-            print(e)
-            self.fail(f"parse_command('REPORT') raised {e} unexpectedly!")
+            self.fail(e)
 
     def test_parse_command_rotate_left(self):
         self.interface.parse_command("PLACE,1,1,NORTH")
         try:
             self.interface.parse_command("LEFT")
         except Exception as e:
-            self.fail(f"parse_command('LEFT') raised {e} unexpectedly!")
+            self.fail(e)
 
     def test_parse_command_rotate_right(self):
         self.interface.parse_command("PLACE,1,1,NORTH")
         try:
             self.interface.parse_command("RIGHT")
         except Exception as e:
-            self.fail(f"parse_command('RIGHT') raised {e} unexpectedly!")
+            self.fail(e)
 
     def test_parse_command_move(self):
         self.interface.parse_command("PLACE,1,1,NORTH")
         try:
             self.interface.parse_command("MOVE")
         except Exception as e:
-            self.fail(f"parse_command('MOVE') raised {e} unexpectedly!")
+            self.fail(e)
 
     def test_parse_command_invalid_command(self):
         with self.assertRaises(ValueError):
             self.interface.parse_command("JUMP")
 
-    def test_parse_command_prohibited_command(self):
-        with self.assertRaises(ValueError):
-            self.interface.parse_command("LEFT")
-        
-        with self.assertRaises(ValueError):
-            self.interface.parse_command("RIGHT")
-
-        with self.assertRaises(ValueError):
-            self.interface.parse_command("MOVE")
-        
-        with self.assertRaises(ValueError):
-            self.interface.parse_command("REPORT")
-        
 if __name__ == '__main__':
     unittest.main()
