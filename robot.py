@@ -132,7 +132,6 @@ class Interface:
         # Non-argument commands
         if potential_command in self.commands:
             self.command_history.append(potential_command)
-            print(potential_command)
             self.commands[potential_command]()
             return
         
@@ -144,20 +143,25 @@ class Interface:
         return False
 
     def execute(self, command):
+        print(f"Executing command: {command}")
         try:
             self.parse_command(command)
         except Exception as e:
             print(f"Error: {e}")
 
 if __name__ == "__main__":
-    interface = Interface()
-    interface.execute("MOVE")
-    interface.execute("PLACE,1,1,NORTH")
-    interface.execute("REPORT")
-    interface.execute("LEFT")
-    interface.execute("MOVE")
-    interface.execute("REPORT")
-    interface.execute("MOVE")
-    interface.execute("REPORT")
+    env = Environment(5, 5)
+    robot = Robot(environment=env)
+    interface = Interface(robot=robot)
+
+    # Read commands from the file
+    with open('commands.txt', 'r') as file:
+        commands = file.readlines()
+
+    # Execute each command
+    for command in commands:
+        command = command.strip()
+        if command:
+            interface.execute(command)
 
     
