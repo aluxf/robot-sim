@@ -89,6 +89,7 @@ class Robot:
             self.f = Direction.rotate_left(self.f)
         elif rotation == "RIGHT":
             self.f = Direction.rotate_right(self.f)
+        return True
     def report(self):
         report_message = f"Report: {self.position.x},{self.position.y},{self.f}"
         print(report_message)
@@ -121,18 +122,20 @@ class Interface:
                 if len(args) != 3:
                     raise ValueError(f"Invalid arguments: {input}")
                 parsed_args = [int(args[0]), int(args[1]), args[2]]
-                self.command_history.append(potential_command)
                 command_result = self.commands[potential_command](*parsed_args)
                 if not command_result:
                     raise ValueError(f"Invalid arguments: {input}")
+                self.command_history.append(potential_command)
                 return
             except Exception as e:
                 raise ValueError(f"Invalid type of arguments: {input}")
                 
         # Non-argument commands
         if potential_command in self.commands:
+            result = self.commands[potential_command]()
+            if not result:
+                raise ValueError(f"Failed to execute: {input}")
             self.command_history.append(potential_command)
-            self.commands[potential_command]()
             return
         
         raise ValueError(f"Invalid command: {input}")
@@ -143,7 +146,7 @@ class Interface:
         return False
 
     def execute(self, command):
-        print(f"Executing command: {command}")
+        print(command)
         try:
             self.parse_command(command)
         except Exception as e:
@@ -155,7 +158,7 @@ if __name__ == "__main__":
     interface = Interface(robot=robot)
 
     # Read commands from the file
-    with open('commands.txt', 'r') as file:
+    with open('commands/commands_1.txt', 'r') as file:
         commands = file.readlines()
 
     # Execute each command
