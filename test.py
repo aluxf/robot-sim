@@ -1,3 +1,6 @@
+from contextlib import redirect_stdout
+import io
+import os
 import random
 import unittest
 from robot import Direction, Environment, Interface, Position, Robot
@@ -288,6 +291,45 @@ class TestInterface(unittest.TestCase):
     def test_parse_command_invalid_command(self):
         with self.assertRaises(ValueError):
             self.interface.parse_command("JUMP")
+
+
+class TestFileIntegration(unittest.TestCase):
+    def test_integration_files(self):
+        test_dir = "robot_tests"
+        input_files = [f for f in os.listdir(test_dir) if f.endswith("_input.txt")]
+        # Sort tests
+        input_files.sort()
+        
+        for input_file in input_files:
+            with self.subTest(test_file=input_file):
+                input_path = os.path.join(test_dir, input_file)
+                # The expected output file has same name with "_expected.txt"
+                expected_path = os.path.join(test_dir, input_file.replace("_input.txt", "_expected.txt"))
+                
+                # Read all commands from the input file
+                with open(input_path, "r") as f:
+                    commands = f.read().splitlines()
+                
+                env = Environment(5, 5)
+                robot = Robot(environment=env)
+                interface = Interface(robot=robot)
+                
+                # Capture any printed output (from REPORT commands)
+                output_capture = io.StringIO()
+                with redirect_stdout(output_capture):
+                    for command in commands:
+                        if command.strip():
+                            interface.execute(command)
+                
+                actual_output = output_capture.getvalue().strip().split('\n')[-1]
+
+                
+                # Read the expected output for comparison
+                with open(expected_path, "r") as f:
+                    expected_output = f.read().strip()
+                
+                self.assertEqual(actual_output, expected_output,
+                                 f"Failed test file: {input_file}")
 
 if __name__ == '__main__':
     unittest.main()
