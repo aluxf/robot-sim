@@ -17,7 +17,7 @@ This project implements a simulation of a toy robot moving on a square tabletop.
 To run the simulator with a predefined command file:
 
 ```sh
-python robot.py --input 'path/to/command_file.txt'
+python robot.py 'path/to/command_file.txt'
 
 ```
 ### Generating Random Command Files
