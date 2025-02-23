@@ -158,7 +158,7 @@ if __name__ == "__main__":
     interface = Interface(robot=robot)
 
     # Read commands from the file
-    with open('commands/commands_1.txt', 'r') as file:
+    with open('random_commands/commands_1.txt', 'r') as file:
         commands = file.readlines()
 
     # Execute each command
