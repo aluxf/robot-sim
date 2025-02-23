@@ -10,6 +10,10 @@ This project implements a simulation of a toy robot moving on a square tabletop.
 - `random_commands/`: Directory containing randomly generated command files.
 - `robot_tests/`: Directory containing predefined test cases.
 
+## Pre-requisites
+
+- Python 3.11.6 or higher
+
 ## Usage
 
 ### Running the Simulator
