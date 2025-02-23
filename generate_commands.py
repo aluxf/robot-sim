@@ -34,12 +34,12 @@ def generate_command_file(filename, num_commands, place_first):
 
 def generate_command_files(num_files, num_commands_per_file, place_first):
     for i in range(num_files):
-        filename = f"commands/commands_{i+1}.txt"
+        filename = f"random_commands/commands_{i+1}.txt"
         generate_command_file(filename, num_commands_per_file, place_first)
         print(f"Generated {filename}")
 
 if __name__ == "__main__":
-    os.makedirs("commands", exist_ok=True)
+    os.makedirs("random_commands", exist_ok=True)
     files = 10
     commands_per_file = 20
     place_first = True
