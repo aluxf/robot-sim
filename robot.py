@@ -16,6 +16,10 @@ Classes:
 """
 
 
+import argparse
+import sys
+
+
 class Direction:
     """
     Represents the cardinal directions for the robot's orientation.
@@ -358,14 +362,25 @@ class Interface:
 
 
 if __name__ == "__main__":
-    # Create the simulation environment and robot.
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Robot Simulator")
+    parser.add_argument("command_file", type=str, help="Path to the command file")
+
+    args = parser.parse_args()
+
+    command_file = args.command_file
+
     env = Environment(5, 5)
     robot = Robot(environment=env)
     interface = Interface(robot=robot)
 
-    # Read commands from a file and execute them.
-    with open('random_commands/commands_1.txt', 'r') as file:
-        commands = file.readlines()
+    # Read commands from the provided file and execute them
+    try:
+        with open(command_file, 'r') as file:
+            commands = file.readlines()
+    except FileNotFoundError:
+        print(f"Error: File '{command_file}' not found.")
+        sys.exit(1)
 
     for command in commands:
         command = command.strip()
