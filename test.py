@@ -169,6 +169,12 @@ class TestRobot(unittest.TestCase):
         self.robot.rotate("RIGHT")
         self.assertEqual(self.robot.f, Direction.NORTH)
 
+        # Invalid input
+        self.robot.place(0, 0, Direction.NORTH)
+        self.assertFalse(self.robot.rotate("UP"))
+        self.assertEqual(self.robot.f, Direction.NORTH)
+
+
     def test_report(self):
         self.robot.place(1, 1, Direction.NORTH)
         

@@ -241,9 +241,11 @@ class Robot:
         """
         if rotation == "LEFT":
             self.f = Direction.rotate_left(self.f)
+            return True
         elif rotation == "RIGHT":
             self.f = Direction.rotate_right(self.f)
-        return True
+            return True
+        return False
 
     def report(self):
         """
