@@ -36,6 +36,13 @@ python generate_commands.py
 python test.py
 ```
 
+### Adding new file tests
+
+In `robot_tests/`, create a input file `filename_input.txt` and expected output file `filename_expected.txt`.
+
+The input file should end with command `REPORT` and expected output file should contain the expected output of the command.
+
+
 ### Custom Example
 
 ```py
